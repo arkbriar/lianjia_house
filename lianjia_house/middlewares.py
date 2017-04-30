@@ -69,7 +69,7 @@ class ProxyMiddleware(object):
         self.update_proxy_pool()
 
     def update_proxy_pool(self):
-        r = requests.get('http://localhost:8000/?types=0&count=40')
+        r = requests.get('http://localhost:8000/?types=0&count=40&country=国内')
         ip_ports = json.loads(r.text)
         global_proxy_list = []
         for ip_port in ip_ports:
