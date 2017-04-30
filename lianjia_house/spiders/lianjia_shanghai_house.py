@@ -40,7 +40,7 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
         house_item['price'] = int(house_info.xpath(
             './div[@class="price"]/div/text()').extract()[0])
         house_item['price_unit'] = house_info.xpath(
-            './div[@class="price"/div/span[@class="unit"]/text()]').extract()[0]
+            './div[@class="price"]/div/span[@class="unit"]/text()').extract()[0]
         house_item['room'] = int(house_info.xpath(
             './div[@class="room"]/div/text()').extract()[0])
         house_item['hall'] = int(house_info.xpath(
