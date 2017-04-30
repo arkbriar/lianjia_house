@@ -6,8 +6,8 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 import json
-import random
 import requests
+from itertools import cycle
 from scrapy import signals
 
 
@@ -61,16 +61,18 @@ class LianjiaHouseSpiderMiddleware(object):
 
 class ProxyMiddleware(object):
 
-    global_proxy_list = []
+    global_proxy_pool = []
 
     def __init__(self):
         # update global proxy list
-        r = requests.get('http://localhost:8000/?types=0&count=80')
+        r = requests.get('http://localhost:8000/?types=0&count=60')
         ip_ports = json.loads(r.text)
+        global_proxy_list = []
         for ip_port in ip_ports:
-            self.global_proxy_list.append('%s:%s' % (ip_port[0], ip_port[1]))
-        assert len(self.global_proxy_list) == 80
+            global_proxy_list.append('%s:%s' % (ip_port[0], ip_port[1]))
+        assert len(global_proxy_list) == 60
+        self.global_proxy_pool = cycle(global_proxy_list)
 
     def process_request(self, request, spider):
-        proxy_addr = random.choice(self.global_proxy_list)
+        proxy_addr = next(self.global_proxy_pool)
         request.meta['proxy'] = 'http://' + proxy_addr
