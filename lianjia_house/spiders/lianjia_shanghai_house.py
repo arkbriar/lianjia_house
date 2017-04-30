@@ -48,7 +48,7 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
         house_item['orientation'] = around_info.xpath(
             './tr[1]/td[4]/text()').extract()[0].strip()
         house_item['region'], house_item['plate'] = around_info.xpath(
-            './tr[2]/td[2]/text()').extract()[0].split(sep=' ', maxsplit=2)
+            './tr[2]/td[2]/text()').extract()[0].split(' ', 2)
         house_item['time'] = around_info.xpath(
             './tr[2]/td[4]/text()').extract()[0]
         house_item['community'] = around_info.xpath(
