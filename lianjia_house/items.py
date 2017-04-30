@@ -9,6 +9,18 @@ import scrapy
 
 
 class LianjiaHouseItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    id = scrapy.Field()
+    price = scrapy.Field()
+    room = scrapy.Field()
+    hall = scrapy.Field()
+    area = scrapy.Field()
+    floor = scrapy.Field()
+    orientation = scrapy.Field()
+    region = scrapy.Field()
+    time = scrapy.Field()
+    community = scrapy.Field()
+    address = scrapy.Field()
+
+
+class LianJiaHouseUrl(scrapy.Item):
+    url = scrapy.Field()
