@@ -62,20 +62,28 @@ class LianjiaHouseSpiderMiddleware(object):
 
 class ProxyMiddleware(object):
 
+    global_proxy_list = []
     proxy_list = []
     update_time = None
+    start_index = 0
 
     def __init__(self):
+        # update global proxy list
+        r = requests.get('http://localhost:8000/?types=0&count=200')
+        ip_ports = json.loads(r.text)
+        for ip_port in ip_ports:
+            self.global_proxy_list.append('%s:%s' % (ip_port[0], ip_port[1]))
+        assert len(self.global_proxy_list) == 200
+
         if len(self.proxy_list) == 0:
             self.update_proxy_list()
 
     def update_proxy_list(self):
-        r = requests.get('http://localhost:8000/?types=0&count=30')
-        ip_ports = json.loads(r.text)
-        self.proxy_list = []
-        for ip_port in ip_ports:
-            self.proxy_list.append('%s:%s' % (ip_port[0], ip_port[1]))
+        self.proxy_list = self.global_proxy_list[self.start_index:self.start_index + 50]
         self.update_time = datetime.utcnow()
+        self.start_index += 50
+        if self.start_index >= 200:
+            self.start_index -= 200
 
     def proxy_list_expired(self):
         # expire every 30s
