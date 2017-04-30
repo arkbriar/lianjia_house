@@ -54,7 +54,7 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
         house_item['community'] = around_info.xpath(
             './tr[3]/td[2]/p/a/text()').extract()[0]
         house_item['address'] = around_info.xpath(
-            './tr[4]/td[2]/p/text()').extract()[0].strip()
+            './tr[4]/td[2]/p/@title').extract()[0].strip()
 
         # extract latitude and longtitude from zone map
         house_item['longitude'] = float(response.xpath(

@@ -1,2 +1,4 @@
 *.pyc
 nohup.out
+*.zip
+*.csv
