@@ -20,8 +20,10 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
                 'http://sh.lianjia.com' + house_url['url'])
 
     def parse(self, response):
+        # sometimes the last div's class is "content forRent" and sometimes is "content"
+        # so here use div[2] instead
         content = response.xpath(
-            '/html/body/div[@class="zf-top"]/div[@class="cj-cun"]/div[@class="content forRent"]')
+            '/html/body/div[@class="zf-top"]/div[@class="cj-cun"]/div[2]')
         # here we may meet class with "houseInfo" or "houseInfo ziru_hezu", so use div[1]
         # instead of div[@class=]
         house_info = content.xpath('./div[1]')
@@ -37,6 +39,8 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
         house_item['id'] = house_id
         house_item['price'] = int(house_info.xpath(
             './div[@class="price"]/div/text()').extract()[0])
+        house_item['price_unit'] = house_info.xpath(
+            './div[@class="price"/div/span[@class="unit"]/text()]'.extract()[0])
         house_item['room'] = int(house_info.xpath(
             './div[@class="room"]/div/text()').extract()[0])
         house_item['hall'] = int(house_info.xpath(
