@@ -7,16 +7,17 @@ from lianjia_house.items import LianjiaHouseItem
 
 
 class LianjiaShanghaiHouseSpider(scrapy.Spider):
+
     name = "lianjia_shanghai_house"
     allowed_domains = ["sh.lianjia.com"]
     start_urls = []
 
     def __init__(self):
-        LianjiaShanghaiHouseSpider.start_urls = []
+        self.start_urls = []
         with open('lianjia_shanghai_url.json') as data_file:
             data = json.load(data_file)
         for house_url in data:
-            LianjiaShanghaiHouseSpider.start_urls.append(
+            self.start_urls.append(
                 'http://sh.lianjia.com' + house_url['url'])
 
     def parse(self, response):
