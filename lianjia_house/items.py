@@ -17,6 +17,7 @@ class LianjiaHouseItem(scrapy.Item):
     floor = scrapy.Field()
     orientation = scrapy.Field()
     region = scrapy.Field()
+    plate = scrapy.Field()
     time = scrapy.Field()
     community = scrapy.Field()
     address = scrapy.Field()

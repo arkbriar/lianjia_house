@@ -22,7 +22,9 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
     def parse(self, response):
         content = response.xpath(
             '/html/body/div[@class="zf-top"]/div[@class="cj-cun"]/div[@class="content forRent"]')
-        house_info = content.xpath('./div[@class="houseInfo"]')
+        # here we may meet class with "houseInfo" or "houseInfo ziru_hezu", so use div[1]
+        # instead of div[@class=]
+        house_info = content.xpath('./div[1]')
         around_info = content.xpath('./table[@class="aroundInfo"]')
 
         match = re.search(
@@ -45,8 +47,8 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
             './tr[1]/td[2]/text()').extract()[0].strip()
         house_item['orientation'] = around_info.xpath(
             './tr[1]/td[4]/text()').extract()[0].strip()
-        house_item['region'] = around_info.xpath(
-            './tr[2]/td[2]/text()').extract()[0]
+        house_item['region'], house_item['plate'] = around_info.xpath(
+            './tr[2]/td[2]/text()').extract()[0].split(sep=' ', maxsplit=2)
         house_item['time'] = around_info.xpath(
             './tr[2]/td[4]/text()').extract()[0]
         house_item['community'] = around_info.xpath(
@@ -55,7 +57,9 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
             './tr[4]/td[2]/p/text()').extract()[0].strip()
 
         # extract latitude and longtitude from zone map
-        house_item['longitude'] = float(response.xpath('//*[@id="zoneMap"]/@longitude').extract()[0])
-        house_item['latitude'] = float(response.xpath('//*[@id="zoneMap"]/@latitude').extract()[0])
+        house_item['longitude'] = float(response.xpath(
+            '//*[@id="zoneMap"]/@longitude').extract()[0])
+        house_item['latitude'] = float(response.xpath(
+            '//*[@id="zoneMap"]/@latitude').extract()[0])
 
         yield house_item
