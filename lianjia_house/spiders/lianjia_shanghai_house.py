@@ -12,45 +12,50 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
     start_urls = []
 
     def __init__(self):
+        LianjiaShanghaiHouseSpider.start_urls = []
         with open('lianjia_shanghai_url.json') as data_file:
             data = json.load(data_file)
         for house_url in data:
-            yield scrapy.Request('http://sh.lianjia.com' + house_url['url'], self.parse)
+            LianjiaShanghaiHouseSpider.start_urls.append(
+                'http://sh.lianjia.com' + house_url['url'])
 
     def parse(self, response):
         content = response.xpath(
             '/html/body/div[@class="zf-top"]/div[@class="cj-cun"]/div[@class="content forRent"]')
         house_info = content.xpath('./div[@class="houseInfo"]')
-        around_info = content.xpath('./div[@class="aroundInfo"]')
+        around_info = content.xpath('./table[@class="aroundInfo"]')
 
-        house_id_str = content.xpath(
-            './div[@class="houseRecord"]/span[@class="houseNum"]/text()').extract()
-        match = re.search('房源编号：(.+?)', house_id_str)
+        match = re.search(
+            u'^http://sh.lianjia.com/zufang/(.+)\\.html$', response.url)
         assert match
         house_id = match.group(1)
 
         # extracting item
         house_item = LianjiaHouseItem()
         house_item['id'] = house_id
-        house_item['price'] = house_info.xpath(
-            './div[@class="price"]/div/text()').extract()
-        house_item['room'] = house_info.xpath(
-            './div[@class="room"]/div/text()').extract()[0]
-        house_item['hall'] = house_info.xpath(
-            './div[@class="room"]/div/text()').extract()[1]
-        house_item['area'] = house_info.xpath(
-            './div[@class="area"]/div/text()').extract()
+        house_item['price'] = int(house_info.xpath(
+            './div[@class="price"]/div/text()').extract()[0])
+        house_item['room'] = int(house_info.xpath(
+            './div[@class="room"]/div/text()').extract()[0])
+        house_item['hall'] = int(house_info.xpath(
+            './div[@class="room"]/div/text()').extract()[1].strip())
+        house_item['area'] = float(house_info.xpath(
+            './div[@class="area"]/div/text()').extract()[0])
         house_item['floor'] = around_info.xpath(
-            './table/tbody/tr[1]/td[2]/text()').extract().strip()
+            './tr[1]/td[2]/text()').extract()[0].strip()
         house_item['orientation'] = around_info.xpath(
-            './table/tbody/tr[1]/td[4]/text()').extract().strip()
+            './tr[1]/td[4]/text()').extract()[0].strip()
         house_item['region'] = around_info.xpath(
-            './table/tbody/tr[2]/td[2]/text()').extract()
+            './tr[2]/td[2]/text()').extract()[0]
         house_item['time'] = around_info.xpath(
-            './table/tbody/tr[2]/td[4]/text()').extract()
+            './tr[2]/td[4]/text()').extract()[0]
         house_item['community'] = around_info.xpath(
-            './table/tbody/tr[3]/td[2]/p/a/text()').extract()
+            './tr[3]/td[2]/p/a/text()').extract()[0]
         house_item['address'] = around_info.xpath(
-            './table/tbody/tr[4]/td[2]/p/text()').extract().strip()
+            './tr[4]/td[2]/p/text()').extract()[0].strip()
+
+        # extract latitude and longtitude from zone map
+        house_item['longitude'] = float(response.xpath('//*[@id="zoneMap"]/@longitude').extract()[0])
+        house_item['latitude'] = float(response.xpath('//*[@id="zoneMap"]/@latitude').extract()[0])
 
         yield house_item

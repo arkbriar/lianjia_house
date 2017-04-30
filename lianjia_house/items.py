@@ -20,6 +20,8 @@ class LianjiaHouseItem(scrapy.Item):
     time = scrapy.Field()
     community = scrapy.Field()
     address = scrapy.Field()
+    longitude = scrapy.Field()
+    latitude = scrapy.Field()
 
 
 class LianJiaHouseUrl(scrapy.Item):

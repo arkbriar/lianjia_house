@@ -5,6 +5,9 @@
 # See documentation in:
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+import json
+import random
+import requests
 from scrapy import signals
 
 
@@ -54,3 +57,19 @@ class LianjiaHouseSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class ProxyMiddleware(object):
+
+    proxy_list = []
+
+    def __init__(self):
+        if len(self.proxy_list) == 0:
+            r = requests.get('http://localhost:8000/?types=0&count=10&country=国内')
+            ip_ports = json.loads(r.text)
+            for ip_port in ip_ports:
+                self.proxy_list.append('%s:%s' % (ip_port[0], ip_port[1]))
+
+    def process_request(self, request, spider):
+        proxy_addr = random.choice(self.proxy_list)
+        request.meta['proxy'] = 'http://' + proxy_addr
