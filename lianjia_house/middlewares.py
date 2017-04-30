@@ -7,6 +7,7 @@
 
 import json
 import requests
+from datetime import datetime, timedelta
 from itertools import cycle
 from scrapy import signals
 
@@ -61,18 +62,26 @@ class LianjiaHouseSpiderMiddleware(object):
 
 class ProxyMiddleware(object):
 
-    global_proxy_pool = []
+    proxy_pool = []
+    proxy_update_time = None
 
     def __init__(self):
-        # update global proxy list
-        r = requests.get('http://localhost:8000/?types=0&count=60')
+        self.update_proxy_pool()
+
+    def update_proxy_pool(self):
+        r = requests.get('http://localhost:8000/?types=0&count=40')
         ip_ports = json.loads(r.text)
         global_proxy_list = []
         for ip_port in ip_ports:
             global_proxy_list.append('%s:%s' % (ip_port[0], ip_port[1]))
-        assert len(global_proxy_list) == 60
-        self.global_proxy_pool = cycle(global_proxy_list)
+        assert len(global_proxy_list) == 40
+        self.proxy_pool = cycle(global_proxy_list)
+        self.proxy_update_time = datetime.utcnow()
 
     def process_request(self, request, spider):
-        proxy_addr = next(self.global_proxy_pool)
+        # update proxy pool every 20s
+        if self.proxy_update_time + timedelta(seconds=20) < datetime.utcnow():
+            self.update_proxy_pool()
+
+        proxy_addr = next(self.proxy_pool)
         request.meta['proxy'] = 'http://' + proxy_addr

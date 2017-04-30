@@ -95,3 +95,6 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Feed export encoding
 FEED_EXPORT_ENCODING = 'utf-8'
+
+# Download timeout
+DOWNLOAD_TIMEOUT = 5
