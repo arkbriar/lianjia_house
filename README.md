@@ -27,7 +27,7 @@ If you want to crawl houses of another city, just do a copy and
 scrapy crawl lianjia_{your city}_url -o lianjia_{your city}_url.json --loglevel INFO
 ```
 
-3\. Replace "lianjia\_{your city}\_house.json" in `lianjia_{your city}_house.py` to "lianjia\_{your city}\_url.json".
+3\. Replace "lianjia\_shanghai\_url.json" in `lianjia_{your city}_house.py` to "lianjia\_{your city}\_url.json".
 
 
 ```bash
