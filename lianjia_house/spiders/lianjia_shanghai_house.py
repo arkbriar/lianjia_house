@@ -65,17 +65,17 @@ class LianjiaShanghaiHouseSpider(scrapy.Spider):
         else:
             tr_idx = 1
         house_item['floor'] = around_info.xpath(
-            './tr[%d]/td[2]/text()' % tr_idx).extract()[0].strip()
+            './tr[%d]/td[2]/text()' % (tr_idx)).extract()[0].strip()
         house_item['orientation'] = around_info.xpath(
-            './tr[%d]/td[4]/text()' % tr_idx).extract()[0].strip()
+            './tr[%d]/td[4]/text()' % (tr_idx)).extract()[0].strip()
         house_item['region'], house_item['plate'] = around_info.xpath(
-            './tr[%d]/td[2]/text()' % tr_idx + 1).extract()[0].split(' ', 2)
+            './tr[%d]/td[2]/text()' % (tr_idx + 1)).extract()[0].split(' ', 2)
         house_item['time'] = around_info.xpath(
-            './tr[%d]/td[4]/text()' % tr_idx + 1).extract()[0]
+            './tr[%d]/td[4]/text()' % (tr_idx + 1)).extract()[0]
         house_item['community'] = around_info.xpath(
-            './tr[%d]/td[2]/p/a/text()' % tr_idx + 2).extract()[0]
+            './tr[%d]/td[2]/p/a/text()' % (tr_idx + 2)).extract()[0]
         house_item['address'] = around_info.xpath(
-            './tr[%d]/td[2]/p/@title' % tr_idx + 3).extract()[0].strip()
+            './tr[%d]/td[2]/p/@title' % (tr_idx + 3)).extract()[0].strip()
 
         # extract latitude and longtitude from zone map
         house_item['longitude'] = float(response.xpath(
