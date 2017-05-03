@@ -77,7 +77,7 @@ class ProxyMiddleware(object):
             global_proxy_list.append('%s:%s' % (ip_port[0], ip_port[1]))
         assert len(global_proxy_list) > 0
         if len(global_proxy_list) != 40:
-            logging.warning("Proxy list get from IPProxyPool is not 40")
+            logging.warning("Length of proxy list got from IPProxyPool doesn't match.")
             return
         self.proxy_pool = cycle(global_proxy_list)
         self.proxy_update_time = datetime.utcnow()
